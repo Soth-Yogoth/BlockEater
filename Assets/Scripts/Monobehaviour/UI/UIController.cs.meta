@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: ad532e0f2f1136c419c17f5c9d8f5adb
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - uiContainer: {instanceID: 0}
+  - gameManager: {instanceID: 0}
+  - VictoryWindow: {instanceID: 0}
+  - DefeatWindow: {instanceID: 0}
+  - Guide: {fileID: 3500317413256862749, guid: 0acce3ed54654c84cb2a94f709816160, type: 3}
+  - GameMenu: {fileID: 3500317413256862749, guid: 4bf5307b0bb7ae44baacd25cb6cb24a2, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
