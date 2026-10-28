@@ -1,81 +1,84 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [System.Serializable]
 public struct BlockRow
 {
-    public BlockData[] Row;
+    public BlockData[] row;
 }
 
 [CreateAssetMenu(fileName = "LevelData", menuName = "Scriptable Objects/LevelData")]
 public class LevelData : ScriptableObject
 {
-    [SerializeField] private int moves = 1;
-    [SerializeField] private BlockData emptyBlock;
-    [SerializeField] private BlockRow[] _gridContent;
+    [SerializeField][Min(1)] private int moves;
+    [SerializeField] private GameConfig gameConfig;
+    [SerializeField] private BlockRow[] gridContent;
+    
+    private BlockData emptyBlock => gameConfig.emptyBlock;
+    private Gameboard gameboard;
     
     public int GridSize
     {
-        get => _gridContent.Length;
-        set => _gridContent = GenerateGridContent(value);
+        get => gridContent.Length;
+        set => gridContent = GenerateGridContent(value);
     }
 
     public BlockData GetBlock(int x, int y)
     {
-        if (x >= 0 && x < GridSize && y >= 0 && y < GridSize)
-        {
-            return _gridContent[x].Row[y] ? _gridContent[x].Row[y] : emptyBlock;
-        }
-        else return emptyBlock;
+        bool isExist = IsInBounds(x, y) && gridContent[x].row[y];
+        return isExist ? gridContent[x].row[y] : emptyBlock;
     }
     
     public void UpdateBlock(int x, int y, BlockData block)
     {
-        if (x < 0 || x >= GridSize || y < 0 || y >= GridSize) return;
-        
-        _gridContent[x].Row[y] = block;
+        if (IsInBounds(x, y)) gridContent[x].row[y] = block;
     }
 
     private BlockRow[] GenerateGridContent(int gridSize)
     {
-        BlockRow[] gridContent = new BlockRow[gridSize];
+        BlockRow[] newGridContent = new BlockRow[gridSize];
         
         for (int i = 0; i < gridSize; i++)
         {
-            gridContent[i].Row = new BlockData[gridSize];
+            newGridContent[i].row = new BlockData[gridSize];
             
             for (int j = 0; j < gridSize; j++)
             {
-                gridContent[i].Row[j] = (i < _gridContent.Length && j < _gridContent[i].Row.Length) ? 
-                    _gridContent[i].Row[j] : emptyBlock;
+                newGridContent[i].row[j] = IsInBounds(i, j) ? gridContent[j].row[j] : emptyBlock; 
             }
         }
         
-        return gridContent;
+        return newGridContent;
     }
 
     public LevelState CreateLevelState()
     {
-        BlockData[,] grid = GetArray(_gridContent);
+        gameboard = new Gameboard();
+        gameboard.Fill(GetArray());
             
-        return new LevelState(grid, emptyBlock, moves);
+        return new LevelState(gameboard, emptyBlock, moves);
     }
 
-    private BlockData[,] GetArray(BlockRow[] rows)
+    private Block[,] GetArray()
     {
-        int arraySize = rows.Length;
+        int arraySize = gridContent.Length;
         
-        BlockData[,] array = new BlockData[arraySize, arraySize];
+        Block[,] array = new Block[arraySize, arraySize];
         
         for (int i = 0; i < arraySize; i++)
         {
             for (int j = 0; j < arraySize; j++)
             {
-                array[i, j] = _gridContent[i].Row[j];
+                Vector2Int position = new Vector2Int(i, j);
+                array[i, j] = gridContent[i].row[j].CreateBlock(gameboard, position);
             }
         }
-
+        
         return array;
+    }
+
+    private bool IsInBounds(int x, int y)
+    {
+        return x >= 0 && x < GridSize && y >= 0 && y < GridSize;
     }
 }
 

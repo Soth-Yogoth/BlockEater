@@ -28,30 +28,29 @@ public class GameView : MonoBehaviour
         uiController.ShowDefeatWindow();
     }
     
-    public void AddPlayerInfo(Player player)
-    {
-        player.OnStateChanged += PlayerStateListener;
-        
-        GameObject playerInfo = new GameObject("PlayerInfo", 
-            typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-        playerInfo.GetComponent<RectTransform>().SetParent(PlayerInfoContainer, false);
-        
-        TMP_Text textMesh = playerInfo.GetComponent<TMP_Text>();
-        
-        textMesh.fontSize = 18;
-        textMesh.text = player.ToString();
-        textMesh.spriteAsset = spriteAsset;
-        
-        //playerInfo.transform.SetParent(PlayerInfoContainer, false);
-        
-        playerInfos.Add(player, textMesh);
-    }
-
-    private void PlayerStateListener(Player player)
-    {
-        playerInfos.TryGetValue(player, out TMP_Text textMesh);
-        textMesh.text = player.ToString();
-    }
+    // public void AddPlayerInfo(Player player, Color color)
+    // {
+    //     player.OnStateChanged += PlayerStateListener;
+    //     
+    //     GameObject playerInfo = new GameObject("PlayerInfo", 
+    //         typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+    //     playerInfo.GetComponent<RectTransform>().SetParent(PlayerInfoContainer, false);
+    //     
+    //     TMP_Text textMesh = playerInfo.GetComponent<TMP_Text>();
+    //     
+    //     textMesh.fontSize = 18;
+    //     textMesh.text = player.ToString();
+    //     textMesh.spriteAsset = spriteAsset;
+    //     textMesh.color = color;
+    //     
+    //     playerInfos.Add(player, textMesh);
+    // }
+    //
+    // private void PlayerStateListener(Player player)
+    // {
+    //     playerInfos.TryGetValue(player, out TMP_Text textMesh);
+    //     textMesh.text = player.ToString();
+    // }
     
     public void ResizeGridCell(int GridSize)
     {
@@ -59,7 +58,7 @@ public class GameView : MonoBehaviour
         gridLayout.cellSize = new Vector2(containerWidth / GridSize, containerWidth / GridSize);
     }
 
-    public void RenderGrid(BlockData[,] grid)
+    public void RenderGrid(Block[,] grid)
     {
         foreach (Transform child in gridLayout.transform)
         {
@@ -70,7 +69,7 @@ public class GameView : MonoBehaviour
         {
             for (int j = 0; j < grid.GetLength(0); j++)
             {
-                BlockData block = grid[j, i]; 
+                Block block = grid[j, i]; 
                 if (block is null) DrawBlock(gridLayout.transform);
                 else DrawBlock(gridLayout.transform, block.Sprite);
             }

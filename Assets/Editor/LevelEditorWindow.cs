@@ -168,7 +168,6 @@ public class LevelEditorWindow : EditorWindow
         else if (evt.target is VisualElement cell)
         {
             cell.style.backgroundImage = new StyleBackground(_currentBlock.Sprite);
-            
             _levelData.UpdateBlock(coordinates[0] - 1, coordinates[1] - 1, _currentBlock);
         }
     }

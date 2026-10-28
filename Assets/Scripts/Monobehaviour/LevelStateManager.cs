@@ -14,22 +14,24 @@ public class LevelStateManager : MonoBehaviour
          gameView.ResizeGridCell(_levelState.Grid.GetLength(0));
          gameView.RenderGrid(_levelState.Grid);
          
-         foreach (Player player in _levelState.Players)
-         {
-             gameView.AddPlayerInfo(player);
-         }
+         // foreach (var player in _levelState.Players)
+         // {
+         //     gameView.AddPlayerInfo(player, player.Color);
+         // }
      }
 
      public void HandlePlayerMove(Vector2Int direction)
      {
-         if (_levelState.TryMovePlayer(direction))
+         foreach (var player in Player.Players)
          {
-             gameView.RenderGrid(_levelState.Grid);
-
-             if (_levelState.IsVictory)
-                 gameView.ShowVictory();
-             else if (_levelState.IsDefeated)
-                 gameView.ShowDefeat();
+             if (player.TryMove(direction))
+             {
+                 if (_levelState.IsVictory())
+                     gameView.ShowVictory();
+                 else if (_levelState.IsDefeated())
+                     gameView.ShowDefeat();
+                 else gameView.RenderGrid(_levelState.Grid);
+             }
          }
      }
 }
