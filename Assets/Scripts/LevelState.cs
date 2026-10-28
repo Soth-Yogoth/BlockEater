@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,35 +11,28 @@ public static class GridExtensions
 
 public class LevelState
 {
-    public Block[,] Grid { get; }
-
     private Gameboard _gameboard;
-    private BlockData _emptyBlock;
+    public Block[,] Grid => _gameboard.Blocks;
+    public List<Player> Players { get; }
     
-    //public List<Player> Players;
+    public event Action<Player> OnPlayerRemoved;
 
-    public LevelState(Gameboard gameboard, BlockData emptyBlock, int moves)
+    public LevelState(Gameboard gameboard, List<Player> players, BlockData emptyBlock, int moves)
     {
-        _emptyBlock = emptyBlock;
-        Grid = gameboard.Blocks;
-        
         _gameboard = gameboard;
-        //Players = InitializePlayers(grid, moves);
-    }
-    
-    public void ClearBlock(int x, int y)
-    {
-        if (Grid.IsInBounds(x, y)) Grid[x, y] = _emptyBlock.CreateBlock(_gameboard, new Vector2Int(x, y));
+        _gameboard.EmptyBlock = emptyBlock;
+        
+        Players = players;
     }
 
     public bool IsVictory()
     {
-        return Player.Players.Count == 0;
+        return Players.Count == 0;
     }
 
     public bool IsDefeated()
     {
-        foreach (var player in Player.Players)
+        foreach (var player in Players)
         {
             List<Block> availableBlocks = _gameboard.GetBlocksAvailableToConsume(player.Position);
 
@@ -50,27 +44,10 @@ public class LevelState
         
         return true;
     }
-
-    // private List<Player> InitializePlayers(BlockData[,] grid, int moves)
-    // {
-    //     List<Player> players = new List<Player>();
-    //     
-    //     for (int i = 0; i < grid.GetLength(0); i++)
-    //     {
-    //         for (int j = 0; j < grid.GetLength(1); j++)
-    //         {
-    //             Block block = grid[i,j];
-    //             
-    //             if (block is Player)
-    //             {
-    //                 Color color = new Color(i * 10, j * 10, i + j * 10);
-    //                 
-    //                 // Player newPlayer = new Player(_gameboard, new Vector2Int(i, j), moves, color);
-    //                 // players.Add(newPlayer);
-    //             }
-    //         }
-    //     }
-    //
-    //     return players;
-    // }
+    
+    private void RemovePlayer(Player player)
+    {
+        if (Players.Remove(player))
+            OnPlayerRemoved?.Invoke(player);
+    }
 }

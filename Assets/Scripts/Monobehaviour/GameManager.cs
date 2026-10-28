@@ -7,8 +7,6 @@ public class GameManager : MonoBehaviour
     public void PauseGame()
     {
         IsPaused = true;
-        
-        Debug.Log("Paused");
     }
 
     public void ResumeGame()

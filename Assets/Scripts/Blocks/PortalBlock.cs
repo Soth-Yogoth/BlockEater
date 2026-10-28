@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(fileName = "TeleportBlock", menuName = "Scriptable Objects/TeleportBlock")]
 public class PortalBlock : RegularBlock
 {
     //А что если превратиться в попкорн ?

@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f304f890f9edede4892efa0db7835a02, type: 3}
+  m_Script: {fileID: 11500000, guid: eea44f1d94a37654c896a155b7e4d95c, type: 3}
   m_Name: Exit
-  m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockName: Exit
-  blockType: 3
-  sprite: {fileID: -1410696440, guid: c70a60d57e74da64cac7bb8242361b92, type: 3}
-  cost: 0
-  effect: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::ExitBlockData
+  Sprite: {fileID: -1410696440, guid: c70a60d57e74da64cac7bb8242361b92, type: 3}
+  value: 0

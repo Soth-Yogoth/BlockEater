@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class Player : Block
 {
-    public static List<Player> Players = new List<Player>();
-    
     private Stack<Vector2Int> positionHistory = new Stack<Vector2Int>();
-    private Vector2Int currentPosition;
     
     private Gameboard _gameboard;
     
@@ -15,6 +12,7 @@ public class Player : Block
     public int ProtectionCount { get; set; } = 0;
     
     public event Action<Player> OnStateChanged;
+    public event Action<Player> OnDissolve;
 
     public Color Color { get; }
     
@@ -25,17 +23,37 @@ public class Player : Block
         Position = position;
         MovesCount = movesCount;
         Color = color;
-        
-        Players.Add(this);
+
+        Tint = color;
     }
 
     public bool TryMove(Vector2Int direction)
     {
-        Vector2Int newPosition = currentPosition + direction;
-        if (_gameboard.Blocks.IsInBounds(newPosition.x, newPosition.y) && TryConsume(_gameboard.Blocks[newPosition.x, newPosition.y]))
+        Vector2Int newPosition = Position + direction;
+        
+        if (_gameboard.Blocks.IsInBounds(newPosition.x, newPosition.y))
         {
-            positionHistory.Push(currentPosition);
-            currentPosition = newPosition;
+            Block nextBlock = _gameboard.Blocks[newPosition.x, newPosition.y];
+            
+            if (nextBlock is Exit)
+            {
+                _gameboard.DeleteBlock(Position);
+                OnDissolve?.Invoke(this);
+            }
+            else if (TryConsume(nextBlock))
+            {
+                _gameboard.DeleteBlock(Position);
+                _gameboard.UpdateBlock(newPosition, this);
+            
+                positionHistory.Push(Position);
+                Position = newPosition;
+                            
+                OnStateChanged?.Invoke(this);
+                
+                nextBlock.OnConsume(_gameboard);
+            }
+            else return false;
+            
             return true;
         }
         
@@ -48,7 +66,7 @@ public class Player : Block
         else if (ProtectionCount > 0) ProtectionCount--;
         else if (block.Value <= MovesCount) MovesCount -= block.Value;
         else return false;
-
+        
         return true;
     }
     
@@ -62,6 +80,6 @@ public class Player : Block
 
     public override void OnConsume(Gameboard gameboard)
     {
-        return;
+        OnDissolve?.Invoke(this);
     }
 }

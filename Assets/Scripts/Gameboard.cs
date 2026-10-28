@@ -5,11 +5,7 @@ using UnityEngine;
 public class Gameboard
 {
     public Block[,] Blocks { get; private set; }
-
-    // public Gameboard(Block[,] blocks)
-    // {
-    //     Blocks = blocks;
-    // }
+    public BlockData EmptyBlock;
 
     public void Fill(Block[,] blocks)
     {
@@ -20,6 +16,12 @@ public class Gameboard
     {
         if (Blocks.IsInBounds(blockPosition.x, blockPosition.y)) 
             Blocks[blockPosition.x, blockPosition.y] = newBlock;
+    }
+    
+    public void DeleteBlock(Vector2Int blockPosition)
+    {
+        if (Blocks.IsInBounds(blockPosition.x, blockPosition.y)) 
+            Blocks[blockPosition.x, blockPosition.y] = EmptyBlock.CreateBlock(this, blockPosition);
     }
 
     //Список блоков, до которых можно добраться

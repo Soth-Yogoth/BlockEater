@@ -9,6 +9,6 @@ public class EmptyBlock : Block
 
     public override void OnConsume(Gameboard gameboard)
     {
-        throw new System.NotImplementedException();
+        
     }
 }

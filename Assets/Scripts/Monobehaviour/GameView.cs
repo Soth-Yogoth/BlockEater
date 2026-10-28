@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,44 +14,55 @@ public class GameView : MonoBehaviour
     
     private UIController uiController;
     
-    void Start()
+    void Awake()
     {
         uiController = GetComponent<UIController>();
     }
     
-    public void ShowVictory()
+    public void ShowVictory() => uiController.ShowVictoryWindow();
+    public void ShowDefeat() => uiController.ShowDefeatWindow();
+    
+    public void AddPlayerInfo(Player player)
     {
-        uiController.ShowVictoryWindow();
+        if (playerInfos.TryGetValue(player, out TMP_Text existingText))
+        {
+            existingText.text = player.ToString();
+            return;
+        }
+        
+        GameObject playerInfo = new GameObject("PlayerInfo", 
+            typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        playerInfo.GetComponent<RectTransform>().SetParent(PlayerInfoContainer, false);
+        
+        TMP_Text textMesh = playerInfo.GetComponent<TMP_Text>();
+        
+        textMesh.fontSize = 18;
+        textMesh.text = player.ToString();
+        textMesh.spriteAsset = spriteAsset;
+        textMesh.color = player.Color;
+        
+        player.OnStateChanged += PlayerStateListener;
+        player.OnDissolve += RemovePlayerInfo;
+        playerInfos.Add(player, textMesh);
     }
 
-    public void ShowDefeat()
+    public void RemovePlayerInfo(Player player)
     {
-        uiController.ShowDefeatWindow();
+        if (player == null) return;
+        player.OnStateChanged -= PlayerStateListener;
+        player.OnDissolve -= RemovePlayerInfo;
+        
+        if (!playerInfos.TryGetValue(player, out TMP_Text textMesh)) return;
+        
+        playerInfos.Remove(player);
+        if (textMesh) Destroy(textMesh.gameObject);
     }
     
-    // public void AddPlayerInfo(Player player, Color color)
-    // {
-    //     player.OnStateChanged += PlayerStateListener;
-    //     
-    //     GameObject playerInfo = new GameObject("PlayerInfo", 
-    //         typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-    //     playerInfo.GetComponent<RectTransform>().SetParent(PlayerInfoContainer, false);
-    //     
-    //     TMP_Text textMesh = playerInfo.GetComponent<TMP_Text>();
-    //     
-    //     textMesh.fontSize = 18;
-    //     textMesh.text = player.ToString();
-    //     textMesh.spriteAsset = spriteAsset;
-    //     textMesh.color = color;
-    //     
-    //     playerInfos.Add(player, textMesh);
-    // }
-    //
-    // private void PlayerStateListener(Player player)
-    // {
-    //     playerInfos.TryGetValue(player, out TMP_Text textMesh);
-    //     textMesh.text = player.ToString();
-    // }
+    private void PlayerStateListener(Player player)
+    {
+        if (playerInfos.TryGetValue(player, out TMP_Text textMesh) && textMesh)
+            textMesh.text = player.ToString();
+    }
     
     public void ResizeGridCell(int GridSize)
     {
@@ -60,36 +72,28 @@ public class GameView : MonoBehaviour
 
     public void RenderGrid(Block[,] grid)
     {
-        foreach (Transform child in gridLayout.transform)
+        foreach (RectTransform child in gridLayout.transform)
         {
             Destroy(child.gameObject);
         }
-
+    
         for (int i = grid.GetLength(1) - 1; i >= 0; i--)
         {
             for (int j = 0; j < grid.GetLength(0); j++)
             {
-                Block block = grid[j, i]; 
-                if (block is null) DrawBlock(gridLayout.transform);
-                else DrawBlock(gridLayout.transform, block.Sprite);
+                DrawBlock(gridLayout.transform, grid[j, i]);
             }
         }
     }
-
-    private void DrawBlock(Transform container, Sprite sprite)
-    {
-        var block = new GameObject("Block", 
-            typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        
-        block.GetComponent<Image>().sprite  = sprite;
-        block.transform.SetParent(container, false);
-    }
     
-    private void DrawBlock(Transform container)
+    private void DrawBlock(Transform container, Block block)
     {
-        var block = new GameObject("Block", 
-            typeof(RectTransform), typeof(CanvasRenderer));
+        var blockView = new GameObject("Block", 
+            typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        blockView.transform.SetParent(container, false);
         
-        block.transform.SetParent(container, false);
+        Image image = blockView.GetComponent<Image>();
+        image.sprite = block.Sprite;
+        image.color = block.Tint;
     }
 }

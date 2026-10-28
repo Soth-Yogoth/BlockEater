@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -14,7 +15,6 @@ public class LevelData : ScriptableObject
     [SerializeField] private BlockRow[] gridContent;
     
     private BlockData emptyBlock => gameConfig.emptyBlock;
-    private Gameboard gameboard;
     
     public int GridSize
     {
@@ -24,6 +24,7 @@ public class LevelData : ScriptableObject
 
     public BlockData GetBlock(int x, int y)
     {
+        Debug.Log("x: " + x + " y: " + y + ", block: " + gridContent[x].row[y]);
         bool isExist = IsInBounds(x, y) && gridContent[x].row[y];
         return isExist ? gridContent[x].row[y] : emptyBlock;
     }
@@ -43,7 +44,7 @@ public class LevelData : ScriptableObject
             
             for (int j = 0; j < gridSize; j++)
             {
-                newGridContent[i].row[j] = IsInBounds(i, j) ? gridContent[j].row[j] : emptyBlock; 
+                newGridContent[i].row[j] = IsInBounds(i, j) ? gridContent[i].row[j] : emptyBlock; 
             }
         }
         
@@ -52,13 +53,15 @@ public class LevelData : ScriptableObject
 
     public LevelState CreateLevelState()
     {
-        gameboard = new Gameboard();
-        gameboard.Fill(GetArray());
+        List<Player> players = new List<Player>();
+        
+        Gameboard gameboard = new Gameboard();
+        gameboard.Fill(GetArray(gameboard, players));
             
-        return new LevelState(gameboard, emptyBlock, moves);
+        return new LevelState(gameboard, players, emptyBlock, moves);
     }
 
-    private Block[,] GetArray()
+    private Block[,] GetArray(Gameboard gameboard, List<Player> players)
     {
         int arraySize = gridContent.Length;
         
@@ -69,7 +72,15 @@ public class LevelData : ScriptableObject
             for (int j = 0; j < arraySize; j++)
             {
                 Vector2Int position = new Vector2Int(i, j);
-                array[i, j] = gridContent[i].row[j].CreateBlock(gameboard, position);
+                Block newBlock = gridContent[i].row[j].CreateBlock(gameboard, position);
+                
+                if (newBlock is Player currentPlayer)
+                {
+                    currentPlayer.OnDissolve += (player) => players.Remove(player);
+                    players.Add(currentPlayer);
+                }
+                
+                array[i, j] = newBlock;
             }
         }
         

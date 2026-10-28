@@ -12,8 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f304f890f9edede4892efa0db7835a02, type: 3}
   m_Name: Popcorn
   m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockName: Popcorn
-  blockType: 0
-  sprite: {fileID: -2362064288820841591, guid: f4c5073e2b98e864a87af3f9481b25ed, type: 3}
-  cost: 1
-  effect: {fileID: 0}
+  Sprite: {fileID: -2362064288820841591, guid: f4c5073e2b98e864a87af3f9481b25ed, type: 3}
+  value: 1

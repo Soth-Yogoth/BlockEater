@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "PumpkinBlockData", menuName = "Scriptable Objects/PumpkinBlockData")]
 public class PumpkinBlockData : BlockData
 {
     [SerializeField] private int protectionValue;

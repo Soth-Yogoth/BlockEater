@@ -12,8 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f304f890f9edede4892efa0db7835a02, type: 3}
   m_Name: Jelly
   m_EditorClassIdentifier: Assembly-CSharp::BlockData
-  blockName: Jelly
-  blockType: 0
-  sprite: {fileID: -646222426, guid: c70a60d57e74da64cac7bb8242361b92, type: 3}
-  cost: 1
-  effect: {fileID: 0}
+  Sprite: {fileID: -646222426, guid: c70a60d57e74da64cac7bb8242361b92, type: 3}
+  value: 1
