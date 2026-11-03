@@ -63,4 +63,40 @@ public class Gameboard
         
         return availableBlocks; 
     }
+
+    public Gameboard MakeCopy()
+    {
+        Gameboard copy = new Gameboard();
+        copy.Blocks = new Block[Blocks.GetLength(0), Blocks.GetLength(1)];
+        
+        return copy;
+    }
+
+    public void CopyBlocksFrom(Gameboard original, Dictionary<Block, Block> copies)
+    {
+        EmptyBlock = original.EmptyBlock;
+        
+        int width = original.Blocks.GetLength(0);
+        int height = original.Blocks.GetLength(1);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Block block = original.Blocks[x, y];
+
+                if (block == null)
+                    continue;
+
+                if (!copies.TryGetValue(block, out Block copy))
+                {
+                    copy = block.MakeCopy(this);
+                    copies.Add(block, copy);
+                }
+
+                Blocks[x, y] = copy;
+            }
+        }
+        
+    }
 }

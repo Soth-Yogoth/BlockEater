@@ -11,16 +11,19 @@ public static class GridExtensions
 
 public class LevelState
 {
-    private Gameboard _gameboard;
-    public Block[,] Grid => _gameboard.Blocks;
+    public Gameboard Gameboard;
+    public Block[,] Grid => Gameboard.Blocks;
     public List<Player> Players { get; }
+
+    private bool timer;
+    private float timeToDefeat;
     
     public event Action<Player> OnPlayerRemoved;
 
-    public LevelState(Gameboard gameboard, List<Player> players, BlockData emptyBlock, int moves)
+    public LevelState(Gameboard gameboard, List<Player> players, BlockData emptyBlock)
     {
-        _gameboard = gameboard;
-        _gameboard.EmptyBlock = emptyBlock;
+        Gameboard = gameboard;
+        Gameboard.EmptyBlock = emptyBlock;
         
         Players = players;
     }
@@ -34,7 +37,7 @@ public class LevelState
     {
         foreach (var player in Players)
         {
-            List<Block> availableBlocks = _gameboard.GetBlocksAvailableToConsume(player.Position);
+            List<Block> availableBlocks = Gameboard.GetBlocksAvailableToConsume(player.Position);
 
             foreach (var block in availableBlocks)
             {
@@ -45,9 +48,32 @@ public class LevelState
         return true;
     }
     
-    private void RemovePlayer(Player player)
+    // private void RemovePlayer(Player player)
+    // {
+    //     if (Players.Remove(player))
+    //         OnPlayerRemoved?.Invoke(player);
+    // }
+
+    public LevelState MakeCopy()
     {
-        if (Players.Remove(player))
-            OnPlayerRemoved?.Invoke(player);
+        Gameboard newGameboard = Gameboard.MakeCopy();
+        Dictionary<Block, Block> blockCopies = new Dictionary<Block, Block>();
+        
+        List<Player> newPlayers = new List<Player>();
+        
+        foreach (Player player in Players)
+        {
+            Player newPlayer = player.MakeCopy(newGameboard) as Player;
+            newPlayers.Add(newPlayer);
+            
+            blockCopies.Add(player, newPlayer);
+        }
+        
+        newGameboard.CopyBlocksFrom(Gameboard, blockCopies);
+        
+        LevelState copy = new LevelState(newGameboard, newPlayers, Gameboard.EmptyBlock);
+        copy.OnPlayerRemoved = OnPlayerRemoved;
+        
+        return copy;
     }
 }

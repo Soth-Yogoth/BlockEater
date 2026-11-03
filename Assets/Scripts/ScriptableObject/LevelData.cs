@@ -58,7 +58,7 @@ public class LevelData : ScriptableObject
         Gameboard gameboard = new Gameboard();
         gameboard.Fill(GetArray(gameboard, players));
             
-        return new LevelState(gameboard, players, emptyBlock, moves);
+        return new LevelState(gameboard, players, emptyBlock);
     }
 
     private Block[,] GetArray(Gameboard gameboard, List<Player> players)
@@ -77,6 +77,7 @@ public class LevelData : ScriptableObject
                 if (newBlock is Player currentPlayer)
                 {
                     currentPlayer.OnDissolve += (player) => players.Remove(player);
+                    currentPlayer.MovesCount = moves;
                     players.Add(currentPlayer);
                 }
                 

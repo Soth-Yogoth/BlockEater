@@ -22,4 +22,10 @@ public class PortalBlock : RegularBlock
         //gameboard.ClearBlock(Position.x, Position.y);
         //gameboard.UpdateBlock(Position.x, Position.y, player);
     }
+
+    public override Block MakeCopy(Gameboard gameboard)
+    {
+        PortalBlock copy = new PortalBlock(Position, Sprite, Value);
+        return copy;
+    }
 }

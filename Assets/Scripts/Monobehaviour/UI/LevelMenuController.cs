@@ -9,13 +9,13 @@ public class LevelMenuController : MonoBehaviour
 {
     [SerializeField] private RectTransform levelContainer;
     [SerializeField] private GameObject buttonPrefab;
-    [SerializeField] private List<SceneAsset> scenes;
+    [SerializeField] private List<string> scenes;
 
     void Start()
     {
         int i = 1;
 
-        foreach (SceneAsset sceneAsset in scenes)
+        foreach (string nsme in scenes)
         {
             GameObject newButton = Instantiate(buttonPrefab, levelContainer);
             
@@ -24,7 +24,7 @@ public class LevelMenuController : MonoBehaviour
                 newButton.TryGetComponent<Button>(out Button button))
             {
                 textMesh.text = i++.ToString();
-                button.onClick.AddListener(() => SceneManager.LoadScene(sceneAsset.name));
+                button.onClick.AddListener(() => SceneManager.LoadScene(name));
                 
                 continue;
             }

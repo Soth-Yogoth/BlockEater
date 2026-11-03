@@ -15,4 +15,4 @@ MonoBehaviour:
   Sprite: {fileID: -7943720702334105097, guid: 1c761f27731cfa4479a641fd14cd5bb5, type: 3}
   value: 99
   movesCount: 10
-  color: {r: 0.5176471, g: 0.4392157, b: 1, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}

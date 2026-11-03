@@ -11,4 +11,10 @@ public class Exit : Block
     {
         
     }
+    
+    public override Block MakeCopy(Gameboard gameboard)
+    {
+        Exit copy = new Exit(Position, Sprite, Value);
+        return copy;
+    }
 }

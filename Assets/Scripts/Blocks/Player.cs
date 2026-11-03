@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class Player : Block
 {
-    private Stack<Vector2Int> positionHistory = new Stack<Vector2Int>();
-    
     private Gameboard _gameboard;
-    
-    public int MovesCount { get; set; }
+
+    public int MovesCount { get; set; } = 10;
     public int ProtectionCount { get; set; } = 0;
     
     public event Action<Player> OnStateChanged;
@@ -16,12 +14,13 @@ public class Player : Block
 
     public Color Color { get; }
     
+    private bool escaped = false;
+    
 
-    public Player(Gameboard gameboard, Vector2Int position, Sprite sprite, int value, int movesCount, Color color) : base(position, sprite, value)
+    public Player(Gameboard gameboard, Vector2Int position, Sprite sprite, int value, Color color) : base(position, sprite, value)
     {
         _gameboard = gameboard;
         Position = position;
-        MovesCount = movesCount;
         Color = color;
 
         Tint = color;
@@ -29,6 +28,8 @@ public class Player : Block
 
     public bool TryMove(Vector2Int direction)
     {
+        if (escaped) return false;
+        
         Vector2Int newPosition = Position + direction;
         
         if (_gameboard.Blocks.IsInBounds(newPosition.x, newPosition.y))
@@ -39,18 +40,19 @@ public class Player : Block
             {
                 _gameboard.DeleteBlock(Position);
                 OnDissolve?.Invoke(this);
+
+                escaped = true;
             }
             else if (TryConsume(nextBlock))
             {
                 _gameboard.DeleteBlock(Position);
                 _gameboard.UpdateBlock(newPosition, this);
-            
-                positionHistory.Push(Position);
+                
                 Position = newPosition;
-                            
-                OnStateChanged?.Invoke(this);
                 
                 nextBlock.OnConsume(_gameboard);
+                
+                OnStateChanged?.Invoke(this);
             }
             else return false;
             
@@ -81,5 +83,15 @@ public class Player : Block
     public override void OnConsume(Gameboard gameboard)
     {
         OnDissolve?.Invoke(this);
+    }
+
+    public override Block MakeCopy(Gameboard newGameboard)
+    {
+        Player copy = new Player(newGameboard, Position, Sprite, Value, Color);
+        
+        copy.MovesCount = MovesCount;
+        copy.ProtectionCount = ProtectionCount;
+        
+        return copy;
     }
 }

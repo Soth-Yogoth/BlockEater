@@ -19,4 +19,10 @@ public class CornBlock : RegularBlock
             if (block is RegularBlock) gameboard.UpdateBlock(block.Position, popcornBlock.CreateBlock(gameboard, block.Position));
         }
     }
+    
+    public override Block MakeCopy(Gameboard gameboard)
+    {
+        CornBlock copy = new CornBlock(Position, Sprite, Value, popcornBlock);
+        return copy;
+    }
 }

@@ -17,4 +17,6 @@ public abstract class Block
     }
 
     public abstract void OnConsume(Gameboard gameboard);
+
+    public abstract Block MakeCopy(Gameboard gameboard);
 }

@@ -1238,12 +1238,13 @@ MonoBehaviour:
   levelContainer: {fileID: 1093744365}
   buttonPrefab: {fileID: 4646857072364633852, guid: 96259ce835141b84594ff20f943a6d66, type: 3}
   scenes:
-  - {fileID: 102900000, guid: 1a3970ff93dd02d43a8b78707232667c, type: 3}
-  - {fileID: 102900000, guid: 2186287dc5118e74f959e31781ed239a, type: 3}
-  - {fileID: 102900000, guid: 97f04feee91170e4eb7af061a09a692b, type: 3}
-  - {fileID: 102900000, guid: 76f6523ce0b31e143a448ba48ff0f621, type: 3}
-  - {fileID: 102900000, guid: 3d80b39dc6ae0b64cbe1e9bc1de4aa92, type: 3}
-  - {fileID: 102900000, guid: bcab16dd1b610274ca895fca91937370, type: 3}
+  - Level_1
+  - Level_2
+  - Level_3
+  - Level_4
+  - Level_5
+  - Level_6
+  - Level_7
 --- !u!4 &1069214396
 Transform:
   m_ObjectHideFlags: 0

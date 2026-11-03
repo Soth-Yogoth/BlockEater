@@ -14,4 +14,10 @@ public class PumpkinBlock : RegularBlock
         Player player = (Player)gameboard.Blocks[Position.x, Position.y];
         player.ProtectionCount += protectionValue;
     }
+    
+    public override Block MakeCopy(Gameboard gameboard)
+    {
+        PumpkinBlock copy = new PumpkinBlock(Position, Sprite, Value, protectionValue);
+        return copy;
+    }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,6 +12,9 @@ public class LevelStateManager : MonoBehaviour
     private LevelState _levelState;
     private bool _endScreenShown;
     
+    private LevelStateHistory _levelStateHistory;
+    private int cancelCount = 3;
+    
      void Start()
      {
          _levelState = levelData.CreateLevelState();
@@ -19,6 +24,9 @@ public class LevelStateManager : MonoBehaviour
          
          gameView.ResizeGridCell(_levelState.Grid.GetLength(0));
          gameView.RenderGrid(_levelState.Grid);
+         
+         _levelStateHistory = new LevelStateHistory();
+         _levelStateHistory.Add(_levelState);
      }
 
      public void HandlePlayerMove(Vector2Int direction)
@@ -38,17 +46,50 @@ public class LevelStateManager : MonoBehaviour
                  _levelState.Players.Sort((a, b) => a.Position.x.CompareTo(b.Position.x));
                  break;
          }
+
+         bool playerMoved = false;
+         List<Player> players = _levelState.Players.ToList();
          
-         foreach (var player in _levelState.Players)
+         foreach (var player in players)
          {
              if (player.TryMove(direction))
              {
-                 gameView.RenderGrid(_levelState.Grid);
+                 playerMoved = true;
                  
                  if (_levelState.IsVictory())
                      gameView.ShowVictory();
-                 else if (_levelState.IsDefeated())
+                 else if (_levelState.IsDefeated() && cancelCount <= 0)
                      gameView.ShowDefeat();
+             }
+         }
+         
+         if (playerMoved)
+         {
+             _levelStateHistory.Add(_levelState);
+             gameView.RenderGrid(_levelState.Grid);
+         }
+     }
+
+     public void OnMoveCancelled()
+     {
+         if (_levelStateHistory.TryGet(out LevelState lastLevelState) && cancelCount-- > 0)
+         {
+             _levelState.OnPlayerRemoved -= HandlePlayerRemoved;
+
+             foreach (Player player in _levelState.Players)
+             {
+                 gameView.RemovePlayerInfo(player);
+             }
+             
+             _levelState = lastLevelState.MakeCopy();
+             gameView.RenderGrid(_levelState.Grid);
+             
+             _levelState.OnPlayerRemoved += HandlePlayerRemoved;
+             
+             foreach (Player player in  _levelState.Players)
+             {
+                 gameView.AddPlayerInfo(player);
+                 player.OnDissolve += (player) => _levelState.Players.Remove(player);
              }
          }
      }

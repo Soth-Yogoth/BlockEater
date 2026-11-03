@@ -11,4 +11,10 @@ public class EmptyBlock : Block
     {
         
     }
+
+    public override Block MakeCopy(Gameboard gameboard)
+    {
+        EmptyBlock copy = new EmptyBlock(Position, Sprite, Value);
+        return copy;
+    }
 }
